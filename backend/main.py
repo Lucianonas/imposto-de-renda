@@ -28,7 +28,7 @@ app = FastAPI(
 # Em produção o Render vai fornecer a URL da Vercel
 origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:5173"
+    "http://localhost:5173,https://imposto-de-renda-wheat.vercel.app/"
 ).split(",")
 
 # CORS — permite que o frontend acesse o backend
