@@ -2,10 +2,14 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+
+# Carrega as variáveis do arquivo .env
+load_dotenv()
 
 # Pega a URL do banco das variáveis de ambiente
 # Em produção usa o PostgreSQL do Render
-# Em desenvolvimento usa o SQLite local
+# Em desenvolvimento usa o PostgreSQL do Render também
 SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "sqlite:///./financeiro.db"
