@@ -64,12 +64,27 @@ def get_resumo_dashboard(db: Session, usuario_id: int):
             ano -= 1
 
         resumo = lancamento_repository.resumo_por_periodo(db, usuario_id, mes, ano)
+
+        # Recalcula patrimônio com apenas as operações que existiam naquele mês
+        patrimonio_hist = 0.0
+        for ticker, categoria in tickers:
+            ops_ate_mes = [
+                op for op in operacao_repository.listar_por_ticker(db, usuario_id, ticker)
+                # Só conta operações que ocorreram ATÉ esse mês
+                if (op.data.year < ano) or (op.data.year == ano and op.data.month <= mes)
+            ]
+            if ops_ate_mes:
+                calc_hist = calcular_preco_medio(ops_ate_mes)
+                if calc_hist["quantidade_atual"] > 0:
+                    patrimonio_hist += calc_hist["total_investido"]
+
         evolucao.append({
             "mes": f"{mes:02d}/{ano}",
             "receitas": resumo["total_receitas"],
             "despesas": resumo["total_despesas"],
             "saldo": resumo["saldo"],
-            "patrimonio": resumo["saldo"] + patrimonio_investimentos
+            # Agora o patrimônio é real para cada ponto no tempo
+            "patrimonio": resumo["saldo"] + patrimonio_hist
         })
 
     # Últimas operações e lançamentos
@@ -86,7 +101,7 @@ def get_resumo_dashboard(db: Session, usuario_id: int):
         for op in todas_operacoes[:5]
     ]
 
-    ultimos_lancamentos = operacao_repository.listar(db, usuario_id, limit=5)
+
     lancamentos_lista = lancamento_repository.listar(db, usuario_id, limit=5)
     ultimos_lancamentos_fmt = [
         {
