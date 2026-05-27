@@ -23,6 +23,12 @@ app = FastAPI(
 
 
 
+#Conectando banco de dados local com o online
+
+
+
+
+
 # Pega a variável de ambiente ALLOWED_ORIGINS
 # Se não tiver definida, usa o localhost como padrão
 # Em produção o Render vai fornecer a URL da Vercel
